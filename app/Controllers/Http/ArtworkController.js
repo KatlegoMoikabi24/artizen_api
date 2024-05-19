@@ -2,6 +2,8 @@
 
 const Artwork = use('App/Models/Artwork');
 const Helpers = use('Helpers');
+const path = require('path');
+const fs = require('fs');
 
 class ArtworkController {
   async index ({ response }) {
@@ -105,6 +107,21 @@ class ArtworkController {
     } catch (error) {
       console.error('Error creating artwork:', error.message)
       return response.status(500).json({ error: 'Failed to create artwork' })
+    }
+  }
+  async image({ params, response }) {
+    try {
+
+     const filePath = path.join(Helpers.publicPath('uploads/artworks'), params.fileName)
+
+      if (fs.existsSync(filePath)) {
+        return response.download(filePath)
+      } else {
+        return response.status(404).json({ error: 'Image not found' })
+      }
+    } catch (error) {
+      console.error('Error retrieving image:', error.message)
+      return response.status(500).json({ error: 'Failed to retrieve image'})
     }
   }
 }
