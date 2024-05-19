@@ -11,11 +11,12 @@ Route.group(() => {
 }).prefix('api/v1/users/');
 
 Route.group(() => {
-    Route.get('', 'ArtworkController.index')
-    Route.post('', 'ArtworkController.store')
-    Route.get(':id', 'ArtworkController.findById')
-    Route.put('approve/:id', 'ArtworkController.approve')
-    Route.put('reject/:id', 'ArtworkController.reject')
-    Route.put('update/:id', 'ArtworkController.update')
-    Route.put('buy/:id', 'ArtworkController.buy')
+    Route.get('', 'ArtworkController.index'),
+    Route.post('', 'ArtworkController.store'),
+    Route.get(':id', 'ArtworkController.findById'),
+    Route.put('approve/:id', 'ArtworkController.approve'),
+    Route.put('reject/:id', 'ArtworkController.reject'),
+    Route.put('update/:id', 'ArtworkController.update'),
+    Route.put('buy/:id', 'ArtworkController.buy'),
+    Route.get('image/:fileName', 'ArtworkController.image')
 }).prefix('api/v1/artwork/');
