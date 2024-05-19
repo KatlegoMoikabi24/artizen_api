@@ -4,6 +4,11 @@
 const Route = use('Route');
 
 Route.group(() => {
+    Route.post('login', 'AuthController.login')
+    Route.post('register', 'AuthController.register')
+  }).prefix('api/v1/auth/')
+
+Route.group(() => {
     Route.get('', 'UserController.index'),
     Route.get(':id', 'UserController.findById'), 
     Route.put(':id', 'UserController.update'),

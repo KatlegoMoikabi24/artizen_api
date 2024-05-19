@@ -90,5 +90,15 @@ module.exports = {
     scheme: 'api',
     uid: 'email',
     password: 'password'
+  },
+  
+  guard: 'api',
+  guards: {
+    api: {
+      driver: 'oat',
+      tokenProvider: {
+        type: 'api'
+      }
+    }
   }
 }

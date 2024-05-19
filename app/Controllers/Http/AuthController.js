@@ -1,25 +1,38 @@
-
-
-HttpContextContract
-const User = require('App/Models/User')
-
+const User = use('App/Models/User')
+const Hash = use('Hash')
 
 class AuthController {
-  async login({ request, auth, response, session }) {
-    const { email, password } = request.all()
+  async login({ request, auth, response }) {
+    const { email, password } = request.only(['email', 'password'])
 
     try {
-      await auth.attempt(email, password)
-      return response.redirect('/dashboard')
-    } catch {
-      session.flash({ error: 'Invalid credentials' })
-      return response.redirect('back')
+
+      // Find the user by email
+      const user = await User.findByOrFail('email', email)
+
+      // Verify password
+      const passwordVerified = await Hash.verify(password, user.password)
+       if (!passwordVerified) {
+         return response.status(400).json({ error: 'Invalid password' })
+       }
+ 
+      return response.ok({ data: { user }});
+    } catch (error) {
+      console.error('Error during login:', error)
+      return response.status(400).json({ error: 'Invalid credentials' })
     }
   }
 
-  async logout({ auth, response }) {
-    await auth.logout()
-    return response.redirect('/')
+  async register({ request, response }) {
+    const { email, password } = request.only(['email', 'password'])
+
+    // Create a new user
+    const user = new User()
+    user.email = email
+    user.password = password
+    await user.save()
+
+    return response.created(user)
   }
 }
 
