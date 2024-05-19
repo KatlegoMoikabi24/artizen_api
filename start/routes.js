@@ -20,3 +20,10 @@ Route.group(() => {
     Route.put('buy/:id', 'ArtworkController.buy'),
     Route.get('image/:fileName', 'ArtworkController.image')
 }).prefix('api/v1/artwork/');
+
+Route.group(() => {
+    Route.post('', 'PaymentController.add'),
+    Route.get('', 'PaymentController.index'),
+    Route.put(':id', 'PaymentController.update'),
+    Route.get(':id', 'PaymentController.findById')
+}).prefix('api/v1/payments/');
