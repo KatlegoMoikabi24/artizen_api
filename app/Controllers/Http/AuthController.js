@@ -7,29 +7,39 @@ class AuthController {
 
     try {
 
-      // Find the user by email
-      const user = await User.findByOrFail('email', email)
+      const user = await User.findByOrFail('email', email);
+      const passwordVerified = await Hash.verify(password, user.password);
 
-      // Verify password
-      const passwordVerified = await Hash.verify(password, user.password)
        if (!passwordVerified) {
-         return response.status(400).json({ error: 'Invalid password' })
+         return response.status(400).json({ error: 'Invalid password' });
        }
  
       return response.ok({ data: { user }});
     } catch (error) {
-      console.error('Error during login:', error)
-      return response.status(400).json({ error: 'Invalid credentials' })
+      console.error('Error during login:', error);
+      return response.status(400).json({ error: 'Invalid credentials' });
     }
   }
 
   async register({ request, response }) {
-    const { email, password } = request.only(['email', 'password'])
+    const { 
+      name,
+      surname,
+      role,
+      email,
+      contact,
+      password
+    } = request.only([ 'name', 'surname', 'role', 'email', 'contact', 'password'])
 
-    // Create a new user
-    const user = new User()
-    user.email = email
-    user.password = password
+    const user = new User();
+    user.name = name;
+    user.surname = surname;
+    user.role = role;
+    user.username = email;
+    user.email = email;
+    user.password = password;
+    user.contacts = contact;
+
     await user.save()
 
     return response.created(user)
