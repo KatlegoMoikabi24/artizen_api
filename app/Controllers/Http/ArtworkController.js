@@ -50,8 +50,8 @@ class ArtworkController {
 
       return response.json(artwork);
     } catch (error) {
-      console.error('Error updating artwork:', error.message);
-      return response.status(500).json({ error: 'Failed to update artwork' });
+      console.error('Error approving artwork:', error.message);
+      return response.status(500).json({ error: 'Failed to approving artwork' });
     }
   }
 
@@ -69,18 +69,18 @@ class ArtworkController {
 
       return response.json(artwork);
     } catch (error) {
-      console.error('Error updating artwork:', error.message);
-      return response.status(500).json({ error: 'Failed to update artwork' });
+      console.error('Error rejecting artwork:', error.message);
+      return response.status(500).json({ error: 'Failed to rejecting artwork' });
     }
   }
 
   async store({ request, response }) {
     try {
-      const artworkData = request.only(['name', 'price']);
+      const artworkData = request.only(['name', 'price', 'artist_id']);
 
       const picture = request.file('picture', {
         types: ['image'],
-        size: '2mb'
+        size: '5mb'
       })
 
       await picture.move(Helpers.publicPath('uploads/artworks'), {
@@ -98,6 +98,7 @@ class ArtworkController {
 
         artwork.name = request.input('name');
         artwork.price = request.input('price');
+        artwork.artist_id = request.input('artist_id');
         artwork.picture = picturePath;
         
         await artwork.save();
