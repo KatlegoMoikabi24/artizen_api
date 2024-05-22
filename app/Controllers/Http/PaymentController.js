@@ -28,6 +28,20 @@ class PaymentController {
         }
     }
 
+    async findByUserId ({ params, response }) {
+      try {
+        const payments = await Payment.query().where('user_id', params.id).fetch();
+
+        if (!payments) {
+          return response.status(404).json({ error: 'Payments not found' })
+        }    
+
+        return response.json(payments)
+      } catch (error) {
+        return response.status(500).json({ error: 'Failed to fetch payments' })
+      }
+  }
+
     async update({ params, response }) {
         try {
           const payment = await Payment.find(params.id);

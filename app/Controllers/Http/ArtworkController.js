@@ -1,6 +1,8 @@
 'use strict'
 
 const Artwork = use('App/Models/Artwork');
+const Payment = use('App/Models/Payment');
+const User = use('App/Models/User');
 const Helpers = use('Helpers');
 const path = require('path');
 const fs = require('fs');
@@ -35,20 +37,76 @@ class ArtworkController {
       return response.status(500).json({ error: 'Failed to fetch artwork' })
     }
   }
+  async findByArtistId({ params, response }) {
+    try {
+        const artistId = params.id;
+
+        const artworks = await Artwork.query().where('artist_id', artistId).fetch();
+        const user = await User.query().where('id', artistId).first();
+
+        if (artworks.rows.length === 0) {
+          return response.status(404).json({ error: 'No artworks found for the given artist ID' });
+        }
+
+        const result = {
+          artworks: artworks.toJSON(),
+          user: user ? user.toJSON() : null
+        };
+    
+        return response.json(result);
+    } catch (error) {
+       console.error('Error fetching artwork by artist ID:', error.message)
+      return response.status(500).json({ error: 'Failed to fetch artwork' })
+    }
+  }
+
+  async findByAdminId({ params, response }) {
+    try {
+        const adminId = params.id;
+
+        const artworks = await Artwork.query().where('approved_by', adminId).fetch();
+    
+        if (artworks.rows.length === 0) {
+          return response.status(404).json({ error: 'No artworks found for the given Admin ID' });
+        }
+    
+        return response.json(artworks);
+    } catch (error) {
+       console.error('Error fetching artwork by admin ID:', error.message)
+      return response.status(500).json({ error: 'Failed to fetch artwork' })
+    }
+  }
+
+  async findByOwnerId({ params, response }) {
+    try {
+        const ownerId = params.id;
+
+        const artworks = await Artwork.query().where('bought_by', ownerId).fetch();
+    
+        if (artworks.rows.length === 0) {
+          return response.status(404).json({ error: 'No artworks found for the given owner ID' });
+        }
+    
+        return response.json(artworks);
+    } catch (error) {
+       console.error('Error fetching artwork by owner ID:', error.message)
+      return response.status(500).json({ error: 'Failed to fetch artwork' })
+    }
+  }
 
   async approve({ params, response }) {
     try {
-      const artwork = await artwork.find(params.id);
+      const artwork = await Artwork.find(params.id);
 
       if (!artwork) {
         return response.status(404).json({ error: 'Artwork not found' });
       }
 
-      artwork.status = artwork.status === 'approved';
+      artwork.status = 'approved';
 
       await artwork.save();
 
-      return response.json(artwork);
+      return response.json({ message: 'Artwork approved successfully' });
     } catch (error) {
       console.error('Error approving artwork:', error.message);
       return response.status(500).json({ error: 'Failed to approving artwork' });
@@ -57,13 +115,13 @@ class ArtworkController {
 
   async reject({ params, response }) {
     try {
-      const artwork = await artwork.find(params.id);
+      const artwork = await Artwork.find(params.id);
 
       if (!artwork) {
         return response.status(404).json({ error: 'Artwork not found' });
       }
 
-      artwork.status = artwork.status === 'rejected';
+      artwork.status = 'rejected';
 
       await artwork.save();
 
@@ -71,6 +129,37 @@ class ArtworkController {
     } catch (error) {
       console.error('Error rejecting artwork:', error.message);
       return response.status(500).json({ error: 'Failed to rejecting artwork' });
+    }
+  }
+
+
+  async buy({ params, request,  response }) {
+    try {
+      const artwork = await Artwork.find(params.id);
+      const payment = new Payment();
+
+      const  belongsTo  = request.input(['bought_by']);
+
+      if (!artwork) {
+        return response.status(404).json({ error: 'Artwork not found' });
+      }else if(!belongsTo){
+        return response.status(500).json({ error: 'Buyer ID not found' });
+      }
+
+      payment.price = artwork.price;
+      payment.artist_id = artwork.id;
+      payment.user_id = belongsTo;
+      
+      artwork.status = 'sold';
+      artwork.bought_by = belongsTo;
+
+      await artwork.save();
+      await payment.save();
+
+      return response.json({ message: 'Artwork purchased successfully' });
+    } catch (error) {
+      console.error('Error rejecting artwork:', error.message);
+      return response.status(500).json({ error: 'Failed to purchased artwork' });
     }
   }
 
