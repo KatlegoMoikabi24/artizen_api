@@ -4,6 +4,9 @@ new Ignitor(require('@adonisjs/fold'))
   .appRoot(__dirname)
   .fireHttpServer((handler) => {
     const Server = use('Server');
-    Server.getInstance().listen(process.env.PORT, '0.0.0.0');
+    const port = process.env.PORT || 10000;
+    Server.getInstance().listen(port, '0.0.0.0', () => {
+      console.log(`Server running on port ${port}`);
+    });
   })
   .catch(console.error);
