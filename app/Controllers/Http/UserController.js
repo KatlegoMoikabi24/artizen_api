@@ -54,15 +54,18 @@ class UserController {
         }
       }
 
-      async activation({ params, request, response }) {
+      async updateRole({ request, response }) {
         try {
-          const user = await User.find(params.id);
+
+          console.log( request.input(['userId']));
+          const user_id = request.input(['userId']);
+          const user = await User.find(user_id);
     
           if (!user) {
             return response.status(404).json({ error: 'User not found' });
           }
     
-          user.status = user.status === 'active' ? 'inactive' : 'active';
+          user.role = request.input(['role']);
     
           await user.save();
     

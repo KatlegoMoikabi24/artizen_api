@@ -4,36 +4,48 @@
 const Route = use('Route');
 
 Route.group(() => {
+
     Route.post('login', 'AuthController.login')
     Route.post('register', 'AuthController.register')
-  }).prefix('api/v1/auth/')
+
+}).prefix('api/v1/auth/');
 
 Route.group(() => {
+
     Route.get('', 'UserController.index'),
-    Route.get(':id', 'UserController.findById'), 
+    Route.get(':id', 'UserController.findById'),
     Route.put(':id', 'UserController.update'),
-    Route.put('activation/:id', 'UserController.activation')
+    Route.post('role', 'UserController.updateRole')
+
 }).prefix('api/v1/users/');
 
 Route.group(() => {
-    Route.get('', 'ArtworkController.index'),
-    Route.delete(':id', 'ArtworkController.delete'),
-    Route.post('', 'ArtworkController.store'),
-    Route.get(':id', 'ArtworkController.findById'),
-    Route.put('approve/:id', 'ArtworkController.approve'),
-    Route.put('reject/:id', 'ArtworkController.reject'),
-    Route.put('update/:id', 'ArtworkController.update'),
-    Route.get('artist/:id', 'ArtworkController.findByArtistId'),
-    Route.get('admin/:id', 'ArtworkController.findByAdminId'),
-    Route.get('owner/:id', 'ArtworkController.findByOwnerId'),
-    Route.put('buy/:id', 'ArtworkController.buy'),
+
+    Route.get('', 'ArtworkController.index')
+    Route.delete(':id', 'ArtworkController.delete')
+    Route.post('', 'ArtworkController.store')
+
+    Route.get(':id', 'ArtworkController.findById')
+    Route.put('approve/:id', 'ArtworkController.approve')
+    Route.put('reject/:id', 'ArtworkController.reject')
+
+    Route.put('update/:id', 'ArtworkController.update')
+    Route.get('artist/:id', 'ArtworkController.findByArtistId')
+    Route.get('admin/:id', 'ArtworkController.findByAdminId')
+
+    Route.get('owner/:id', 'ArtworkController.findByOwnerId')
+    Route.put('buy/:id', 'ArtworkController.buy')
     Route.get('image/:fileName', 'ArtworkController.image')
+
 }).prefix('api/v1/artwork/');
 
 Route.group(() => {
-    Route.post('', 'PaymentController.add'),
-    Route.get('', 'PaymentController.index'),
-    Route.put(':id', 'PaymentController.update'),
-    Route.get(':id', 'PaymentController.findById'),
+
+    Route.post('', 'PaymentController.add')
+    Route.get('', 'PaymentController.index')
+
+    Route.put(':id', 'PaymentController.update')
+    Route.get(':id', 'PaymentController.findById')
     Route.get('user/:id', 'PaymentController.findByUserId')
+
 }).prefix('api/v1/payments/');
