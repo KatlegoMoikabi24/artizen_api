@@ -12,6 +12,7 @@ class CreateArtworksSchema extends Schema {
       table.integer('approved_by').unsigned().references('id').inTable('users').onDelete('SET NULL')
       table.integer('bought_by').unsigned().references('id').inTable('users').onDelete('SET NULL')
       table.enum('status', ['pending', 'approved', 'sold']).defaultTo('pending')
+      table.integer('stage').defaultTo(0)
       table.decimal('price').notNullable()
       table.string('picture').notNullable()
       table.timestamps()

@@ -202,6 +202,10 @@ class ArtworkController {
   async image({ params, response }) {
     try {
 
+      response.header('Access-Control-Allow-Origin', '*');
+      response.header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE');
+      response.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');  
+
      const filePath = path.join(Helpers.publicPath('uploads/artworks'), params.fileName)
 
       if (fs.existsSync(filePath)) {

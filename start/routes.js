@@ -14,9 +14,8 @@ Route.group(() => {
 
     Route.get('', 'UserController.index'),
     Route.get(':id', 'UserController.findById'),
-    Route.put(':id', 'UserController.update'),
-    Route.post('role', 'UserController.updateRole')
-
+    Route.post(':id', 'UserController.update'),
+    Route.post('role/:id', 'UserController.updateRole')
 }).prefix('api/v1/users/');
 
 Route.group(() => {

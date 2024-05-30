@@ -1,6 +1,7 @@
 'use strict'
 
 const User = use('App/Models/User');
+const Hash = use('Hash');
 
 class UserController {
     async index({ response }) {
@@ -35,15 +36,15 @@ class UserController {
         }
       }
 
-      async update({ params, request, response }) {
+      async updateRole({ params, request, response }) {
         try {
           const user = await User.find(params.id)
     
           if (!user) {
             return response.status(404).json({ error: 'User not found' })
           }
-    
-          user.merge(request.only(['name', 'email', 'password']))
+      
+          user.merge(request.only(['role']))
     
           await user.save()
     
@@ -53,19 +54,39 @@ class UserController {
           return response.status(500).json({ error: 'Failed to update user' });
         }
       }
-
-      async updateRole({ request, response }) {
+      async update({ params, request, response }) {
         try {
+          const user = await User.find(params.id);
+      
+          if (!user) {
+            return response.status(404).json({ error: 'User not found' });
+          }
+      
+          const data = request.only(['name', 'surname', 'email', 'role', 'contacts']);
+      
+          if (data.password && data.password !== user.password) {
+              data.password = await Hash.make(data.password);
+          }
+      
+          user.merge(data);
+          await user.save();
+      
+          return response.json(user);
+        } catch (error) {
+          console.error('Error updating user:', error.message);
+          return response.status(500).json({ error: 'Failed to update user' });
+        }
+      }
 
-          console.log( request.input(['userId']));
-          const user_id = request.input(['userId']);
-          const user = await User.find(user_id);
+      async activation({ params, request, response }) {
+        try {
+          const user = await User.find(params.id);
     
           if (!user) {
             return response.status(404).json({ error: 'User not found' });
           }
     
-          user.role = request.input(['role']);
+          user.status = user.status === 'active' ? 'inactive' : 'active';
     
           await user.save();
     

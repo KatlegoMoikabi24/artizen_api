@@ -16,7 +16,7 @@ class UsersSchema extends Schema {
       table.string('password').notNullable()
       table.string('email').notNullable().unique()
       table.string('contacts').notNullable().unique()
-      table.enum('role', ['user', 'admin', 'artist']).defaultTo('user')
+      table.enum('role', ['buyer', 'admin', 'artist']).defaultTo('buyer')
       table.timestamps()
     })
   }
