@@ -35,6 +35,7 @@ Route.group(() => {
     Route.get('owner/:id', 'ArtworkController.findByOwnerId')
     Route.put('buy/:id', 'ArtworkController.buy')
     Route.get('image/:fileName', 'ArtworkController.image')
+    Route.put('reloadBid/:id', 'ArtworkController.updateBidTimer')
 
 }).prefix('api/v1/artwork/');
 

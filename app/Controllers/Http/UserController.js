@@ -64,10 +64,6 @@ class UserController {
       
           const data = request.only(['name', 'surname', 'email', 'role', 'contacts']);
       
-          if (data.password && data.password !== user.password) {
-              data.password = await Hash.make(data.password);
-          }
-      
           user.merge(data);
           await user.save();
       

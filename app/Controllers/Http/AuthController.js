@@ -1,5 +1,4 @@
-const User = use('App/Models/User')
-const Hash = use('Hash')
+const User = use('App/Models/User');
 
 class AuthController {
   async login({ request, response }) {
@@ -7,10 +6,8 @@ class AuthController {
   
     try {
       const user = await User.findByOrFail('email', email);
-      console.log('User found:', user);
-  
-      const passwordVerified = await Hash.verify(password, user.password);
-      console.log('Password verified:', passwordVerified);
+
+      const passwordVerified = (password == user.password);
   
       if (!passwordVerified) {
         return response.status(400).json({ error: 'Invalid password' });

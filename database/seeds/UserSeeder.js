@@ -11,7 +11,6 @@
 */
 
 const User = use('App/Models/User');
-const Hash = use('Hash');
 
 class UserSeeder {
   async run () {
@@ -22,7 +21,7 @@ class UserSeeder {
       contacts: '0664301975',
       email: 'katlego@gmail.com',
       role: 'admin',
-      password: await Hash.make('123456')
+      password: '123456'
     });
   }
 }

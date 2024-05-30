@@ -218,6 +218,25 @@ class ArtworkController {
       return response.status(500).json({ error: 'Failed to retrieve image'})
     }
   }
+
+  async updateBidTimer({ params, response }) {
+    try {
+      const artwork = await Artwork.find(params.id);
+
+      if (!artwork) {
+        return response.status(404).json({ error: 'Artwork not found' });
+      }
+
+      artwork.stage = 2;
+
+      await artwork.save();
+
+      return response.json(artwork);
+    } catch (error) {
+      console.error('Error rejecting artwork:', error.message);
+      return response.status(500).json({ error: 'Failed to rejecting artwork' });
+    }
+  }
 }
 
 module.exports = ArtworkController
