@@ -15,6 +15,7 @@ class CreateArtworksSchema extends Schema {
       table.integer('stage').defaultTo(0)
       table.decimal('price').notNullable()
       table.string('picture').notNullable()
+      table.timestamp('bid_time').nullable()
       table.timestamps()
     })
   }

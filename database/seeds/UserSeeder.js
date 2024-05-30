@@ -15,13 +15,13 @@ const User = use('App/Models/User');
 class UserSeeder {
   async run () {
     await User.create({
-      name: 'Katlego',
-      surname: 'Moikabi',
-      username: 'katlego1424',
-      contacts: '0664301975',
-      email: 'katlego@gmail.com',
+      name: 'Tshwane',
+      surname: 'Seshego',
+      username: 'tshwane',
+      contacts: '0112321234',
+      email: 'admin@artisan.com',
       role: 'admin',
-      password: '123456'
+      password: '123456789'
     });
   }
 }
