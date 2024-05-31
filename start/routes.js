@@ -28,7 +28,7 @@ Route.group(() => {
     Route.put('approve/:id', 'ArtworkController.approve')
     Route.put('reject/:id', 'ArtworkController.reject')
 
-    Route.put('update/:id', 'ArtworkController.update')
+    Route.post('update/:id', 'ArtworkController.update')
     Route.get('artist/:id', 'ArtworkController.findByArtistId')
     Route.get('admin/:id', 'ArtworkController.findByAdminId')
 

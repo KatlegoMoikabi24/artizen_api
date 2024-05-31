@@ -45,7 +45,6 @@ class PaymentController {
     async update({ params, response }) {
         try {
           const payment = await Payment.find(params.id);
-
           if (!payment) {
             return response.status(404).json({ error: 'Payment not found' })
           }    
