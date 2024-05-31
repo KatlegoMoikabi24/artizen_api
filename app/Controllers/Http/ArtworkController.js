@@ -8,14 +8,30 @@ const path = require('path');
 const fs = require('fs');
 
 class ArtworkController {
-  async index ({ response }) {
+  async index({ response }) {
     try {
-      const artworks = await Artwork.all()
+      const artworks = await Artwork.all();
+      const artworksJSON = artworks.toJSON();
 
-      return response.json(artworks)
+      const artworksWithImages = await Promise.all(artworksJSON.map(async (artwork) => {
+        const filePath = path.join(Helpers.publicPath('uploads/artworks'), artwork.picture);
+
+        if (fs.existsSync(filePath)) {
+          const fileBuffer = fs.readFileSync(filePath);
+          const base64Image = fileBuffer.toString('base64');
+          return {
+            ...artwork,
+            picture: base64Image
+          };
+        } else {
+          return artwork;
+        }
+      }));
+
+      return response.json(artworksWithImages);
     } catch (error) {
-      console.error('Error fetching artworks:', error.message)
-      return response.status(500).json({ error: 'Failed to fetch artworks' })
+      console.error('Error fetching artworks:', error.message);
+      return response.status(500).json({ error: 'Failed to fetch artworks' });
     }
   }
 
@@ -27,10 +43,20 @@ class ArtworkController {
       if (!artwork) {
         return response.status(404).json({ error: 'Artwork not found' })
       }
+      const filePath = path.join(Helpers.publicPath('uploads/artworks'), artwork.picture);
 
-      console.log('artwork: ', artwork);
+      if (fs.existsSync(filePath)) {
+        const fileBuffer = fs.readFileSync(filePath);
 
-      return response.json(artwork)
+        const base64Image = fileBuffer.toString('base64');
+
+        const artworkWithImage = {
+          ...artwork.toJSON(),
+          picture: base64Image
+        };
+
+        return response.json(artworkWithImage);
+      }
     } catch (error) {
       // Handle errors
       console.error('Error fetching artwork by ID:', error.message)
@@ -48,12 +74,32 @@ class ArtworkController {
           return response.status(404).json({ error: 'No artworks found for the given artist ID' });
         }
 
+          // Convert artworks to JSON
+        const artworksJSON = artworks.toJSON();
+
+        // Add image data to artworks
+        const artworksWithImages = await Promise.all(artworksJSON.map(async (artwork) => {
+          const filePath = path.join(Helpers.publicPath('uploads/artworks'), artwork.picture);
+
+          if (fs.existsSync(filePath)) {
+            const fileBuffer = fs.readFileSync(filePath);
+            const base64Image = fileBuffer.toString('base64');
+            return {
+              ...artwork,
+              picture: base64Image
+            };
+          } else {
+            return artwork;
+          }
+        }));
+
+        // Prepare the result object
         const result = {
-          artworks: artworks.toJSON(),
+          artworks: artworksWithImages,
           user: user ? user.toJSON() : null
         };
-    
-        return response.json(result);
+    return response.json(result);
+
     } catch (error) {
        console.error('Error fetching artwork by artist ID:', error.message)
       return response.status(500).json({ error: 'Failed to fetch artwork' })
@@ -127,6 +173,7 @@ class ArtworkController {
       }
 
       artwork.status = 'rejected';
+      artwork.stage = 1;
 
       await artwork.save();
 
@@ -182,7 +229,7 @@ class ArtworkController {
       payment.user_id = belongsTo;
       
       artwork.status = 'sold';
-      artwork.stage = 4;
+      artwork.stage = 5;
       artwork.bought_by = belongsTo;
 
       await artwork.save();
@@ -233,21 +280,25 @@ class ArtworkController {
   }
   async image({ params, response }) {
     try {
-
       response.header('Access-Control-Allow-Origin', '*');
       response.header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE');
-      response.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');  
+      response.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
 
-     const filePath = path.join(Helpers.publicPath('uploads/artworks'), params.fileName)
+      const filePath = path.join(Helpers.publicPath('uploads/artworks'), params.fileName);
 
       if (fs.existsSync(filePath)) {
-        return response.download(filePath)
+        const fileBuffer = fs.readFileSync(filePath);
+
+        response.header('Content-Type', 'image/png'); // Assuming PNG, adjust as necessary
+        response.header('Content-Disposition', `inline; filename="${params.fileName}"`);
+
+        return response.send(fileBuffer);
       } else {
-        return response.status(404).json({ error: 'Image not found' })
+        return response.status(404).json({ error: 'Image not found' });
       }
     } catch (error) {
-      console.error('Error retrieving image:', error.message)
-      return response.status(500).json({ error: 'Failed to retrieve image'})
+      console.error('Error retrieving image:', error.message);
+      return response.status(500).json({ error: 'Failed to retrieve image' });
     }
   }
 
@@ -265,8 +316,7 @@ class ArtworkController {
         const currentTime = new Date();
         artwork.bid_time = new Date(currentTime.getTime() + 5 * 60 * 1000);  
       } else {
-        artwork.stage = 2;
-        this.prebuy();
+        artwork.stage = 5;
       }
 
 
@@ -291,7 +341,6 @@ class ArtworkController {
         return response.status(500).json({ error: 'Buyer ID not found' });
       }
  
-      artwork.stage = 3;
       artwork.bought_by = belongsTo;
       artwork.price = price;
 
@@ -302,6 +351,21 @@ class ArtworkController {
       console.error('Error rejecting artwork:', error.message);
       return response.status(500).json({ error: 'Failed to purchased artwork' });
     }
+  }
+
+  async finalStage({ params, request,  response }) {
+    try {
+      const artwork = await Artwork.find(params.id);
+ 
+      artwork.stage = 5;
+
+      await artwork.save();
+
+      return response.json({ message: 'Artwork purchased successfully' });
+    } catch (error) {
+      console.error('Error rejecting artwork:', error.message);
+      return response.status(500).json({ error: 'Failed to purchased artwork' });
+    }finalStage
   }
 }
 

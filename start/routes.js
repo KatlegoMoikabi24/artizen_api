@@ -28,6 +28,7 @@ Route.group(() => {
     Route.put('approve/:id', 'ArtworkController.approve')
     Route.put('reject/:id', 'ArtworkController.reject')
 
+    Route.post('pre-buy/:id', 'ArtworkController.finalStage')
     Route.post('update/:id', 'ArtworkController.update')
     Route.get('artist/:id', 'ArtworkController.findByArtistId')
     Route.get('admin/:id', 'ArtworkController.findByAdminId')
