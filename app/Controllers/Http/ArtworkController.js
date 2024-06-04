@@ -148,8 +148,10 @@ class ArtworkController {
         return response.status(404).json({ error: 'Artwork not found' });
       }
 
+
+      artwork.stage = 2;
+      artwork.bought_by = null;
       artwork.status = 'approved';
-      artwork.stage = 1;
       
 
       const currentTime = new Date();
@@ -172,8 +174,9 @@ class ArtworkController {
         return response.status(404).json({ error: 'Artwork not found' });
       }
 
-      artwork.status = 'rejected';
       artwork.stage = 1;
+      artwork.bought_by = null;
+      artwork.status = 'rejected';
 
       await artwork.save();
 
@@ -181,33 +184,6 @@ class ArtworkController {
     } catch (error) {
       console.error('Error rejecting artwork:', error.message);
       return response.status(500).json({ error: 'Failed to rejecting artwork' });
-    }
-  }
-
-  async prebuy({ params, request,  response }) {
-    try {
-      const artwork = await Artwork.find(params.id);
-
-      const  belongsTo  = request.input(['bought_by']);
-
-      if (!artwork) {
-       
-        return response.status(404).json({ error: 'Artwork not found' });
-        
-      }else if(!belongsTo){
-
-        return response.status(500).json({ error: 'Buyer ID not found' });
-      }
-      
-      artwork.stage = 3;
-      artwork.bought_by = belongsTo;
-
-      await artwork.save();
-
-      return response.json({ message: 'Artwork bid won successfully' });
-    } catch (error) {
-      console.error('Error rejecting artwork:', error.message);
-      return response.status(500).json({ error: 'Failed to bid for artwork' });
     }
   }
 
@@ -311,12 +287,12 @@ class ArtworkController {
       }
 
       if(artwork.bought_by == null) {
-        artwork.stage = 2;
+        artwork.stage = 3;
 
         const currentTime = new Date();
         artwork.bid_time = new Date(currentTime.getTime() + 5 * 60 * 1000);  
       } else {
-        artwork.stage = 5;
+        artwork.stage = 4;
       }
 
 
@@ -351,21 +327,6 @@ class ArtworkController {
       console.error('Error rejecting artwork:', error.message);
       return response.status(500).json({ error: 'Failed to purchased artwork' });
     }
-  }
-
-  async finalStage({ params, request,  response }) {
-    try {
-      const artwork = await Artwork.find(params.id);
- 
-      artwork.stage = 5;
-
-      await artwork.save();
-
-      return response.json({ message: 'Artwork purchased successfully' });
-    } catch (error) {
-      console.error('Error rejecting artwork:', error.message);
-      return response.status(500).json({ error: 'Failed to purchased artwork' });
-    }finalStage
   }
 }
 
