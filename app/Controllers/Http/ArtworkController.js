@@ -176,7 +176,7 @@ class ArtworkController {
 
       artwork.stage = 1;
       artwork.bought_by = null;
-      artwork.status = 'rejected';
+      // artwork.status = 'rejected';
 
       await artwork.save();
 
