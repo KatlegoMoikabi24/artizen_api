@@ -218,6 +218,32 @@ class ArtworkController {
     }
   }
 
+  async delete({ params, response }) {
+    try {
+
+      const artworkId = params.id;
+      const artwork = await Artwork.find(artworkId);
+  
+      if (!artwork) {
+        return response.status(404).json({ error: 'Artwork not found' });
+      }
+  
+      const picturePath = Helpers.publicPath(`uploads/artworks/${artwork.picture}`);
+  
+      await artwork.delete();
+      
+      const fs = require('fs');
+      if (fs.existsSync(picturePath)) {
+        fs.unlinkSync(picturePath);
+      }
+  
+      return response.status(200).json({ message: 'Artwork deleted successfully' });
+    } catch (error) {
+      console.error('Error deleting artwork:', error.message);
+      return response.status(500).json({ error: 'Failed to delete artwork' });
+    }
+  }
+
   async store({ request, response }) {
     try {
       const artworkData = request.only(['name', 'price', 'artist_id']);
