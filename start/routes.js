@@ -25,6 +25,7 @@ Route.group(() => {
     Route.post('', 'ArtworkController.store')
 
     Route.get(':id', 'ArtworkController.findById')
+    Route.get('pending', 'ArtworkController.pending')
     Route.put('approve/:id', 'ArtworkController.approve')
     Route.put('reject/:id', 'ArtworkController.reject')
 

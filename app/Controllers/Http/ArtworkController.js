@@ -63,6 +63,36 @@ class ArtworkController {
       return response.status(500).json({ error: 'Failed to fetch artwork' })
     }
   }
+
+  async pending({ params, response }) {
+    try {
+
+      const artwork = await Artwork.query().where('status', 'approved').fetch();
+
+      if (!artwork) {
+        return response.status(404).json({ error: 'Artwork not found' })
+      }
+      const filePath = path.join(Helpers.publicPath('uploads/artworks'), artwork.picture);
+
+      if (fs.existsSync(filePath)) {
+        const fileBuffer = fs.readFileSync(filePath);
+
+        const base64Image = fileBuffer.toString('base64');
+
+        const artworkWithImage = {
+          ...artwork.toJSON(),
+          picture: base64Image
+        };
+
+        return response.json(artworkWithImage);
+      }
+    } catch (error) {
+      // Handle errors
+      console.error('Error fetching artwork by ID:', error.message)
+      return response.status(500).json({ error: 'Failed to fetch artwork' })
+    }
+  }
+
   async findByArtistId({ params, response }) {
     try {
         const artistId = params.id;
@@ -201,7 +231,7 @@ class ArtworkController {
       }
 
       payment.price = artwork.price;
-      payment.artist_id = artwork.id;
+      payment.artist_id = artwork.artist_id;
       payment.user_id = belongsTo;
       
       artwork.status = 'sold';
