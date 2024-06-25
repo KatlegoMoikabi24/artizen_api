@@ -232,7 +232,6 @@ class ArtworkController {
       const emailData = {
         artname: artwork.name,
         description: artwork.price,
-        date_submitted: artwork.created_at.toDateString(),
         username: `${user.name} ${user.surname}`
       };
       await Mail.send('emails.rejected', emailData, (message) => {
