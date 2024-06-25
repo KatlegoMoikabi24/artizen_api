@@ -6,6 +6,7 @@ const User = use('App/Models/User');
 const Helpers = use('Helpers');
 const path = require('path');
 const fs = require('fs');
+const Mail = use('Mail');
 
 class ArtworkController {
   async index({ response }) {
@@ -173,32 +174,51 @@ class ArtworkController {
   async approve({ params, response }) {
     try {
       const artwork = await Artwork.find(params.id);
+      const user = await User.find(artwork.artist_id);
+
+      if (!user) {
+        return response.status(404).json({ error: 'Artist not found' });
+      }
 
       if (!artwork) {
         return response.status(404).json({ error: 'Artwork not found' });
       }
 
-
       artwork.stage = 2;
       artwork.bought_by = null;
       artwork.status = 'approved';
-      
 
       const currentTime = new Date();
       artwork.bid_time = new Date(currentTime.getTime() + 5 * 60 * 1000);
 
       await artwork.save();
 
-      return response.json({ message: 'Artwork approved successfully' });
-    } catch (error) {
-      console.error('Error approving artwork:', error.message);
-      return response.status(500).json({ error: 'Failed to approve artwork' });
-    }
+      const emailData = {
+        artname: artwork.name,
+        description: artwork.price,
+        username: `${user.name} ${user.surname}`
+      };
+      await Mail.send('emails.approved', emailData, (message) => {
+        message.from('no-reply@artizen.com');
+        message.to(user.email)
+        message.subject('Artwork Approval ')
+      });
+
+        return response.json({ message: 'Artwork approved successfully and email sent.' })
+      } catch (error) {
+        console.error('Error sending email:', error.message)
+        return response.status(500).json({ error: 'Failed to send email' })
+      }
   }
 
   async reject({ params, response }) {
     try {
       const artwork = await Artwork.find(params.id);
+      const user = await User.find(artwork.artist_id);
+        
+      if (!user) {
+        return response.status(404).json({ error: 'Artist not found' });
+      }
 
       if (!artwork) {
         return response.status(404).json({ error: 'Artwork not found' });
@@ -209,6 +229,17 @@ class ArtworkController {
       // artwork.status = 'rejected';
 
       await artwork.save();
+      const emailData = {
+        artname: artwork.name,
+        description: artwork.price,
+        date_submitted: artwork.created_at.toDateString(),
+        username: `${user.name} ${user.surname}`
+      };
+      await Mail.send('emails.rejected', emailData, (message) => {
+        message.from('no-reply@artizen.com');
+        message.to(user.email)
+        message.subject('Artwork Rejection Notice')
+      });
 
       return response.json(artwork);
     } catch (error) {
@@ -220,9 +251,12 @@ class ArtworkController {
   async buy({ params, request,  response }) {
     try {
       const artwork = await Artwork.find(params.id);
+      const artist = await User.find(artwork.artist_id);
+      // const buyer = await User.find(artwork.boug);
       const payment = new Payment();
 
-      const  belongsTo  = request.input(['bought_by']);
+      const belongsTo  = request.input(['bought_by']);
+      const buyer = await User.find(artwork.belongsTo);
 
       if (!artwork) {
         return response.status(404).json({ error: 'Artwork not found' });
@@ -241,6 +275,20 @@ class ArtworkController {
       await artwork.save();
       await payment.save();
 
+      const emailData = {
+        artname: artwork.name,
+        description: artwork.price,
+        date_submitted: artwork.created_at.toDateString(),
+        username: `${buyer.name} ${buyer.surname}`
+      };
+      
+      await Mail.send('emails.buyerPayment', emailData, (message) => {
+        message.from('no-reply@artizen.com');
+        message.to(buyer.email)
+        message.subject('Artwork Success Purchase')
+      });
+
+      
       return response.json({ message: 'Artwork purchased successfully' });
     } catch (error) {
       console.error('Error rejecting artwork:', error.message);
@@ -321,7 +369,7 @@ class ArtworkController {
       if (fs.existsSync(filePath)) {
         const fileBuffer = fs.readFileSync(filePath);
 
-        response.header('Content-Type', 'image/png'); // Assuming PNG, adjust as necessary
+        response.header('Content-Type', 'image/png');
         response.header('Content-Disposition', `inline; filename="${params.fileName}"`);
 
         return response.send(fileBuffer);

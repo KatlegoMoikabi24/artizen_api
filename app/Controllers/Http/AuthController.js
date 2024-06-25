@@ -1,4 +1,5 @@
 const User = use('App/Models/User');
+const Mail = use('Mail');
 
 class AuthController {
   async login({ request, response }) {
@@ -20,6 +21,45 @@ class AuthController {
     }
   }
   
+  async passwordReset({ request, response }) {
+    const { email } = request.only(['email']);
+  
+    try {
+      const user = await User.findByOrFail('email', email);
+
+      if(user) {
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$!';
+
+        let password = '';
+        
+        for (let i = 0; i < 10; i++) {
+          password += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        
+        const emailData = {
+          tempPassword: password,
+          username: `${user.name} ${user.surname}`
+        };
+  
+        user.password = password;
+        await user.save();
+
+        await Mail.send('emails.password', emailData, (message) => {
+          message.from('no-reply@artizen.com');
+          message.to(user.email)
+          message.subject('Password Reset')
+        });
+        return response.ok({ data: { user } });
+      } else {
+
+        return response.ok({ data: 'Password Sent' });
+
+      }
+    } catch (error) {
+      console.error('Error during login:', error);
+      return response.status(400).json({ error: error });
+    }
+  }
 
   async register({ request, response }) {
     const { 

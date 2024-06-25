@@ -1,0 +1,21 @@
+{{-- resources/views/emails/welcome.edge --}}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Artwork Approved</title>
+</head>
+<body>
+    <h1>Artizen Payment Feedback</h1>
+    <hr>
+    <h1>Success Artwork Payment</h1>
+    <p>Congrats {{ username }}, You have successfully purchased the artwork named: <strong>{{ artname }}</strong>, thank you...browse for more artwork on Our Artizan App!!</p>
+    <p>Artowrk Details:</p>
+    <ul>
+        <li>Name/Title: {{ artname }}</li>
+        <li>Price: {{ description }}</li>
+        {{--  <img src="{{ picture }}" alt="Artwork" style="max-width: 100%; height: auto;">  --}}
+    </ul>
+    <p>The Above Artwork Now Belongs To You {{ username }} !!</p>
+    <marquee>Artizen Team</marquee>
+</body>
+</html>

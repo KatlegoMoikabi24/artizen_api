@@ -1,0 +1,21 @@
+{{-- resources/views/emails/welcome.edge --}}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Artwork Approved</title>
+</head>
+<body>
+    <h1>Artizen Artwork Feedback</h1>
+    <hr>
+    <h1>Artwork Approval</h1>
+    <p>Hi {{ username }}, We have good news for you... Your artwork named: <strong>{{ artname }}</strong> was happily reviewd & approved by our artizen team.</p>
+    <p>Details:</p>
+    <ul>
+        <li>Name/Title: {{ artname }}</li>
+        <li>Price: {{ description }}</li>
+        {{--  <img src="{{ picture }}" alt="Artwork" style="max-width: 100%; height: auto;">  --}}
+    </ul>
+    <p>The Above Artwork Is Now Available For Buyers To Bid... All The Best !!</p>
+    <marquee>Artizen Team</marquee>
+</body>
+</html>

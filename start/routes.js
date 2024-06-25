@@ -7,6 +7,7 @@ Route.group(() => {
 
     Route.post('login', 'AuthController.login')
     Route.post('register', 'AuthController.register')
+    Route.post('passwordReset', 'AuthController.passwordReset')
 
 }).prefix('api/v1/auth/');
 
@@ -15,6 +16,7 @@ Route.group(() => {
     Route.get('', 'UserController.index'),
     Route.get(':id', 'UserController.findById'),
     Route.post(':id', 'UserController.update'),
+    Route.delete(':id', 'UserController.delete'),
     Route.post('role/:id', 'UserController.updateRole')
 }).prefix('api/v1/users/');
 

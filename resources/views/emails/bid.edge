@@ -1,0 +1,22 @@
+{{-- resources/views/emails/welcome.edge --}}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Artwork Rejection</title>
+</head>
+<body>
+    <h1>Artizen Artwork Feedback</h1>
+    <hr>
+    <h1>Artwork Rejection</h1>
+    <p>Sorry to inform that your uploaded artwork named <strong>{{ artname }}</strong> was rejected.</p>
+    <p>Details:</p>
+    <ul>
+        <li>Name/Title: {{ artname }}</li>
+        <li>Price: {{ description }}</li>
+        <li>Date Submitted: {{ date_submitted }}</li>
+        {{--  <img src="{{ picture }}" alt="Artwork" style="max-width: 100%; height: auto;">  --}}
+    </ul>
+    <p>Please try uploading a different artwork. Thank you!</p>
+    <marquee>Artizen Team</marquee>
+</body>
+</html>
