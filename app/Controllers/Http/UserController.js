@@ -78,7 +78,7 @@ class UserController {
             return response.status(404).json({ error: 'User not found' });
           }
       
-          const data = request.only(['name', 'surname', 'email', 'role', 'contacts']);
+          const data = request.only(['name', 'surname', 'email', 'role', 'contacts', 'password']);
       
           user.merge(data);
           await user.save();
