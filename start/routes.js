@@ -22,7 +22,7 @@ Route.group(() => {
 
 Route.group(() => {
 
-    Route.get('', 'ArtworkController.index')
+    Route.get('', 'ArtworkController.index'),
     Route.delete(':id', 'ArtworkController.delete')
     Route.post('', 'ArtworkController.store')
 
