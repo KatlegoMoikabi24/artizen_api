@@ -1,22 +1,78 @@
-{{-- resources/views/emails/welcome.edge --}}
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Artwork Sold</title>
+    <meta charset="UTF-8">
+    <title>Artwork Purchased Confirmation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+        .container {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #28a745;
+            font-size: 24px;
+        }
+        hr {
+            border: 0;
+            border-top: 1px solid #dddddd;
+            margin: 20px 0;
+        }
+        p {
+            font-size: 16px;
+            line-height: 1.5;
+        }
+        .highlight {
+            color: #28a745;
+            font-weight: bold;
+        }
+        .cta-button {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 20px 0;
+            background-color: #28a745;
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        .footer {
+            font-size: 14px;
+            color: #888;
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Artizen Artwork Feedback</h1>
-    <hr>
-    <h1>Artwork Sold</h1>
-    <p>Sorry to inform that your uploaded artwork named <strong>{{ artname }}</strong> was rejected.</p>
-    <p>Details:</p>
-    <ul>
-        <li>Name/Title: {{ artname }}</li>
-        <li>Price: {{ description }}</li>
-        <li>Date Submitted: {{ date_submitted }}</li>
-        {{--  <img src="{{ picture }}" alt="Artwork" style="max-width: 100%; height: auto;">  --}}
-    </ul>
-    <p>Please try uploading a different artwork. Thank you!</p>
-    <marquee>Artizen Team</marquee>
+    <div class="container">
+        <h1>Artwork Purchased Confirmation</h1>
+        <hr>
+        
+        <p>Dear {{ username }},</p>
+        <p>We are thrilled to inform you that your artwork titled <span class="highlight">"{{ artname }}"</span>
+           has been successfully purchased!</p>
+        
+        <p>Below are the details of the sale:</p>
+        <p><strong>Artwork Title:</strong> {{ artname }}</p>
+        <p><strong>Purchase Price:</strong> {{ price }}</p>
+        
+        <p>To view more details about this sale and manage your artworks, please click the button below:</p>
+        <a href="https://artizen-b451b.web.app/ui-components/menus" class="cta-button">View Payment Details</a>
+        
+        <p>If the button above does not work, copy and paste the following URL into your web browser:</p>
+        https://artizen-b451b.web.app/ui-components/menus  
+        <hr>
+        <p class="footer">Thank you for being a valued member of the Artizen community.<br>The Artizen Team</p>
+    </div>
 </body>
 </html>

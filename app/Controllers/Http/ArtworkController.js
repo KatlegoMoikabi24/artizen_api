@@ -247,51 +247,68 @@ class ArtworkController {
     }
   }
 
-  async buy({ params, request,  response }) {
+  async buy({ params, request, response }) {
     try {
       const artwork = await Artwork.find(params.id);
-      const artist = await User.find(artwork.artist_id);
-      // const buyer = await User.find(artwork.boug);
-      const payment = new Payment();
-
-      const belongsTo  = request.input(['bought_by']);
-      const buyer = await User.find(artwork.belongsTo);
+      const boughtBy = request.input('bought_by');
 
       if (!artwork) {
         return response.status(404).json({ error: 'Artwork not found' });
-      }else if(!belongsTo){
-        return response.status(500).json({ error: 'Buyer ID not found' });
+      }
+  
+      if (!boughtBy) {
+        return response.status(400).json({ error: 'Buyer ID not found' });
+      }
+  
+      const artist = User.artist_id;
+      const artistId = artwork.artist_id;
+  
+      if (!artistId) {
+        return response.status(400).json({ error: 'Artist ID not found for this artwork' });
       }
 
+      const payment = new Payment();
       payment.price = artwork.price;
-      payment.artist_id = artwork.artist_id;
-      payment.user_id = belongsTo;
-      
+      payment.artist_id = artistId;
+      payment.user_id = boughtBy;
+  
       artwork.status = 'sold';
-      artwork.stage = 5;
-      artwork.bought_by = belongsTo;
-
+      artwork.bought_by = boughtBy;
+  
       await artwork.save();
       await payment.save();
+  
+      const artists = await User.find(artistId);
+      const buyer = await User.find(boughtBy);
 
-      const emailData = {
+      let emailData = {
         artname: artwork.name,
-        description: artwork.price,
-        date_submitted: artwork.created_at.toDateString(),
-        username: `${buyer.name} ${buyer.surname}`
+        price: artwork.price,
+        username: `${artists.name} ${artists.surname}`
       };
-      
-      await Mail.send('emails.buyerPayment', emailData, (message) => {
+
+      await Mail.send('emails.artistPayment', emailData, (message) => {
         message.from('no-reply@artizen.com');
-        message.to(buyer.email)
-        message.subject('Artwork Success Purchase')
+        message.to(artists.email)
+        message.subject('Artwork Purchased Successfully')
       });
 
-      
+      // emailData = {
+      //   artname: artwork.name,
+      //   description: artwork.price,
+      //   username: `${buyer.name} ${buyer.surname}`
+      // };
+
+      // await Mail.send('emails.rejected', emailData, (message) => {
+      //   message.from('no-reply@artizen.com');
+      //   message.to(buyer.email)
+      //   message.subject('Artwork Purchased Successfully')
+      // });
+
       return response.json({ message: 'Artwork purchased successfully' });
     } catch (error) {
-      console.error('Error rejecting artwork:', error.message);
-      return response.status(500).json({ error: 'Failed to purchased artwork' });
+      console.error('Error purchasing artwork:', error.message);
+      return response.status(500).json({ error: 'Failed to purchase artwork' });
     }
   }
 
