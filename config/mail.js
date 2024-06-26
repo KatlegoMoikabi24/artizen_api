@@ -12,8 +12,8 @@ module.exports = {
     host: Env.get('MAIL_HOST', 'sandbox.smtp.mailtrap.io'),
     secure: false,
     auth: {
-      user: Env.get('MAIL_USERNAME', '795d67b701909a'),
-      pass: Env.get('MAIL_PASSWORD', '67b1c35e14725a'),
+      user: Env.get('MAIL_USERNAME', '6356ec47c87e1e'),
+      pass: Env.get('MAIL_PASSWORD', '868b45f786d9a9'),
     },
     tls: {
       rejectUnauthorized: false,
@@ -21,7 +21,7 @@ module.exports = {
   },
 
   from: {
-    address: Env.get('MAIL_FROM_ADDRESS', 'katlego1424@gmail.com'),
+    address: Env.get('MAIL_FROM_ADDRESS', 'artizen@gmail.com'),
     name: Env.get('MAIL_FROM_NAME', 'Artizen App'),
   },
 }
